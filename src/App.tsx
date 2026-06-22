@@ -19,6 +19,7 @@ import { CV_ASCII_URI, CV_HTML_URI } from './cvData';
 // --- Components ---
 import { QuantumLab } from './components/QuantumLab';
 import { ThreeQuantumSkillsBg } from './components/ThreeQuantumSkillsBg';
+import { CreativeLoader } from './components/CreativeLoader';
 
 const Navbar = ({ 
   onBackToHost,
@@ -2869,10 +2870,32 @@ const Footer = () => {
 };
 
 export default function Portfolio() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
   const [isEntered, setIsEntered] = useState(false);
   const [activeVideo, setActiveVideo] = useState<'forward' | 'reverse'>('forward');
   const forwardRef = useRef<HTMLVideoElement>(null);
   const reverseRef = useRef<HTMLVideoElement>(null);
+
+  // Smooth loading progress sequence
+  useEffect(() => {
+    let progress = 0;
+    const interval = setInterval(() => {
+      const increment = Math.floor(Math.random() * 8) + 4;
+      progress = Math.min(progress + increment, 100);
+      setLoadingProgress(progress);
+      
+      if (progress >= 100) {
+        clearInterval(interval);
+        const timeout = setTimeout(() => {
+          setIsLoading(false);
+        }, 500); // Allow telemetry display to settle at 100%
+        return () => clearTimeout(timeout);
+      }
+    }, 70);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Slide state and references
   const [activeIndex, setActiveIndex] = useState(0);
@@ -3150,6 +3173,23 @@ export default function Portfolio() {
 
   return (
     <div className="selection:bg-white selection:text-black min-h-screen h-screen overflow-hidden bg-black text-white relative">
+      {/* Creative Quantum Loader Screen */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            key="quantum-global-loader"
+            initial={{ opacity: 1 }}
+            exit={{ 
+              opacity: 0,
+              transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+            }}
+            className="fixed inset-0 z-[9999]"
+          >
+            <CreativeLoader progress={loadingProgress} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Background Video (Seamless Forward-Reverse Ping-Pong Loop preserved identically as requested) */}
       <div className="fixed inset-0 z-0 bg-black pointer-events-none">
         <video
