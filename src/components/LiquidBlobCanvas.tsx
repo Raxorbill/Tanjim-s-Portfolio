@@ -42,7 +42,7 @@ export const LiquidBlobCanvas: React.FC = () => {
         speedX: 0.25,
         speedY: 0.18,
         morphSpeed: 0.0008,
-        color: "rgba(99, 102, 241, 0.12)", // Semi-transparent Indigo
+        color: "rgba(255, 255, 255, 0.06)", // Soft monochrome white glow
         phaseOffsets: Array.from({ length: 8 }, (_, i) => i * 1.2),
         angle: 0,
       },
@@ -55,7 +55,7 @@ export const LiquidBlobCanvas: React.FC = () => {
         speedX: -0.2,
         speedY: 0.22,
         morphSpeed: 0.0012,
-        color: "rgba(139, 92, 246, 0.09)", // Violet
+        color: "rgba(148, 163, 184, 0.08)", // Cool slate gray base
         phaseOffsets: Array.from({ length: 7 }, (_, i) => i * 0.9),
         angle: Math.PI / 3,
       },
@@ -68,7 +68,7 @@ export const LiquidBlobCanvas: React.FC = () => {
         speedX: 0.15,
         speedY: -0.25,
         morphSpeed: 0.001,
-        color: "rgba(59, 130, 246, 0.07)", // Blue
+        color: "rgba(100, 116, 139, 0.05)", // Deep slate accent
         phaseOffsets: Array.from({ length: 6 }, (_, i) => i * 1.5),
         angle: Math.PI / 1.5,
       },

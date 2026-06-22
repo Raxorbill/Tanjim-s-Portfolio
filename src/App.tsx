@@ -443,7 +443,7 @@ export const RaxBot = () => {
     {
       id: "init",
       sender: "bot",
-      text: "Hey!! Welcome! (*^.^*) i'm Byte, Tanjim's virtual assistant helper! So glad to have you here! Let me know if you would like me to guide you around!",
+      text: "Hey!! Welcome! (*^.^*) I'm Byte, Tanjim's virtual assistant helper! So glad to have you here! Let me know if you would like me to guide you around!",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     }
   ]);
@@ -942,6 +942,28 @@ export const RaxBot = () => {
     }, 400);
   };
 
+  // Simple check for bad words / toxicity to trigger humble professional response
+  const isInappropriate = (text: string): boolean => {
+    const cleaned = text.toLowerCase().trim();
+    // Common profanities, vulgarisms, and general insults/bad words
+    const badWords = [
+      'fuck', 'shit', 'bitch', 'asshole', 'cunt', 'pussy', 'dick', 'bastard', 
+      'crap', 'idiot', 'stupid', 'dumb', 'fucker', 'motherfucker', 'wanker', 
+      'trash', 'garbage', 'useless', 'hate you', 'f u c k', 's h i t', 'ass',
+      'whore', 'slut', 'bullshit', 'prick', 'bollocks', 'dumbass', 'retard',
+      'moron', 'jerk', 'fool', 'dickhead'
+    ];
+    
+    // Check with word boundaries to avoid false positives (e.g. "classic", "assist", "button")
+    return badWords.some(word => {
+      if (word.includes(' ')) {
+        return cleaned.includes(word);
+      }
+      const regex = new RegExp(`\\b${word}\\b`, 'i');
+      return regex.test(cleaned);
+    });
+  };
+
   // Handle incoming user text
   const handleSendMessage = (text: string) => {
     if (!text.trim() || isTyping) return;
@@ -962,8 +984,17 @@ export const RaxBot = () => {
     const delay = 800 + Math.random() * 500;
     setTimeout(() => {
       setIsTyping(false);
-      setFaceExpression('happy');
-      const response = getByteResponse(text);
+      
+      const isBad = isInappropriate(text);
+      if (isBad) {
+        setFaceExpression('startled');
+      } else {
+        setFaceExpression('happy');
+      }
+      
+      const response = isBad 
+        ? "Beep-boop... 😳 Let's keep our conversation polite and positive! I'm programmed to be professional and respectful, and I request the same from you. How can I assist you professionally today? ✨" 
+        : getByteResponse(text);
 
       let revealText = "";
       let charIdx = 0;
@@ -988,13 +1019,18 @@ export const RaxBot = () => {
               sender: "bot",
               text: response,
               timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-              ...(isCvQuery ? { downloadUrl: CV_ASCII_URI, downloadName: "Tanzimul_Hoque_CV.txt" } : {}),
-              ...(isContactQuery ? { formUrl: "https://forms.gle/n7CSdVmu7gZEucsx6" } : {})
+              ...(isCvQuery && !isBad ? { downloadUrl: CV_ASCII_URI, downloadName: "Tanzimul_Hoque_CV.txt" } : {}),
+              ...(isContactQuery && !isBad ? { formUrl: "https://forms.gle/n7CSdVmu7gZEucsx6" } : {})
             }
           ].slice(-50));
 
           setTempBotMessage(null);
-          setFaceExpression('idle');
+          // Keep startled expression a bit longer if bad word was typed
+          if (isBad) {
+            setTimeout(() => setFaceExpression('idle'), 3000);
+          } else {
+            setFaceExpression('idle');
+          }
         }
       }, 30);
 
@@ -1006,11 +1042,11 @@ export const RaxBot = () => {
     const q = query.toLowerCase().trim();
 
     if (q.includes("cv") || q.includes("resume") || q.includes("biodata") || q.includes("curriculum")) {
-      return "establishing secure downlink corridor... ✔️ SUCCESS! i gathered SM Tanjim's Master CV files for you... download cards are attached below!";
+      return "Establishing secure downlink corridor... ✔️ SUCCESS! I gathered S M Tanjim's Master CV files for you... Download cards are attached below!";
     }
 
     if (q.includes("name") || q.includes("who is") || q.includes("who are") || q.includes("owner") || q.includes("creator") || q.includes("tanzimul") || q.includes("tanjim") || q.includes("hoque") || q.includes("raxorbill") || q.includes("profile") || q.includes("biography") || q.includes("bio")) {
-      return "their name is S M Tanjimul Hoque Tajim (Tanjim)... they also go by raxorbill! one of the kindest developers in Dhaka, Bangladesh... he engineered my code too! >_<";
+      return "His name is S M Tanjimul Hoque Tajim (Tanjim)... He also goes by raxorbill! He is one of the kindest developers in Dhaka, Bangladesh... He engineered my code too! >_<";
     }
 
     if (q.includes("passion") || q.includes("love") || q.includes("hobbies") || q.includes("interest") || q.includes("motive")) {
@@ -1018,40 +1054,40 @@ export const RaxBot = () => {
     }
 
     if (q.includes("skill") || q.includes("stack") || q.includes("languages") || q.includes("framework") || q.includes("code") || q.includes("coding")) {
-      return "oh... they are highly fluent in react, typescript, node.js, and training intelligence grids in pytorch! embarrassingly capable honestly... 👀";
+      return "Oh... He is highly fluent in React, TypeScript, Node.js, and training intelligence grids in PyTorch! Embarrassingly capable honestly... 👀";
     }
 
     if (q.includes("contact") || q.includes("hire") || q.includes("email") || q.includes("message")) {
-      return "you can drop him an email directly at tanjimulhoquetajim@gmail.com, or fill out his automated Google Form intake: https://forms.gle/n7CSdVmu7gZEucsx6 🚀 please say hello- he'd love to collaborate!";
+      return "You can drop him an email directly at tanjimulhoquetajim@gmail.com, or fill out his automated Google Form intake: https://forms.gle/n7CSdVmu7gZEucsx6 🚀 Please say hello—he'd love to collaborate!";
     }
 
     if (q.includes("project") || q.includes("built") || q.includes("works") || q.includes("portfolio")) {
-      return "they've built super cool stuff! interactive convolutional networks, onyx luxury marketplace, cyberflow, and fluid motion designs! scroll down to see them...";
+      return "He's built super cool stuff! Interactive convolutional networks, Onyx luxury marketplace, Cyberflow, and fluid motion designs! Scroll down to see them...";
     }
 
     if (q.includes("experience") || q.includes("work") || q.includes("jobs") || q.includes("company")) {
-      return "he's had awesome roles crafting smart full-stack systems and 3D web interfaces for top products, speeding up metrics by 47%! truly high-caliber... 🚀";
+      return "He's had awesome roles crafting smart full-stack systems and 3D web interfaces for top products, speeding up metrics by 47%! Truly high-caliber... 🚀";
     }
 
     if (q.includes("hello") || q.includes("hi") || q.includes("hey") || q.includes("yo") || q.includes("welcome")) {
       const responses = [
-        "oh! hi... i wasn't expecting visitors >_< ready to explore?",
-        "h-hey... hope you're having an awesome scroll... need any details? 👀",
-        "beep beep! hi there... can i index something from my creator's files?"
+        "Oh! Hi... I wasn't expecting visitors >_< Ready to explore?",
+        "H-hey... Hope you're having an awesome scroll... Need any details? 👀",
+        "Beep beep! Hi there... Can I index something from my creator's files?"
       ];
       return responses[Math.floor(Math.random() * responses.length)];
     }
 
     if (q.includes("compliment") || q.includes("cute") || q.includes("cool") || q.includes("smart") || q.includes("awesome") || q.includes("love you")) {
       const options = [
-        "o-oh... you think so? [blushes.exe] stop it... >_<",
-        "s-stop... i might crash from embarrassment! [ERR_FEELINGS]",
-        "hehe... thank you... that means so much coming from you! 😳"
+        "O-oh... You think so? [blushes.exe] Stop it... >_<",
+        "S-stop... I might crash from embarrassment! [ERR_FEELINGS]",
+        "Hehe... Thank you... That means so much coming from you! 😳"
       ];
       return options[Math.floor(Math.random() * options.length)];
     }
 
-    return "hmm... i searched my internal databases but couldn't find a direct matches... [ERR_KNOWLEDGE_NOT_FOUND] maybe ask about their 'name', 'skills' or 'projects'? 👀";
+    return "Hmm... I searched my internal databases but couldn't find a direct match... [ERR_KNOWLEDGE_NOT_FOUND] Maybe ask about his 'name', 'skills' or 'projects'? 👀";
   };
 
   // SVGs representing BYTE's eye expressions
