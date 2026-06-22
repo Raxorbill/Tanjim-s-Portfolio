@@ -1,0 +1,6 @@
+{
+  "name": "RAXORBILL Portfolio",
+  "description": "A premium, cinematic portfolio for S M TANJIMUL HOQUE TAJIM (RAXORBILL), featuring AI-inspired futuristic design and Apple-style UI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
