@@ -239,7 +239,7 @@ const WelcomePage = ({ onEnter }: { onEnter: () => void; key?: string }) => {
             transition={{ duration: 1.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="text-xs sm:text-sm md:text-2xl lg:text-3xl font-light tracking-[0.2em] sm:tracking-[0.3em] text-white/50 uppercase"
           >
-            ENTER THE EXPERIENCE
+            EXPLORE THE PORTFOLIO
           </motion.h2>
         </div>
 
